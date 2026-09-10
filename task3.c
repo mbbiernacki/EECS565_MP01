@@ -1,6 +1,6 @@
 // EECS 565: Mini Project 01
 // Marie Biernacki
-// TASK 2: Implement brute-force password cracker.
+// TASK 3: Implement brute-force password cracker (MODIFIED FOR OPTIMIZATION)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,30 +50,28 @@ bool isWordInDict(char *word) {
 }
 
 // function to conduct the brute force search, using recursion
-void bruteForce(char *ciphertext, int kLen, int fwLen, char *currentKey, int keyIndex) {
+void bruteForce(char *ciphertext, int *mappedCipher, int kLen, int fwLen, char *currentKey, int keyIndex) {
     // Base Case: The key is fully generated
     if (keyIndex == kLen) {
         currentKey[kLen] = '\0'; // Null-terminate the candidate key
         
         char firstWord[256];
         
-        // similar for loop logic from task 1
-        for (int i = 0; i < fwLen; i++){
-            // get the key_index, using modulo to ensure starting at the beginning
+       // OPTIMIZATION
+        for (int i = 0; i < fwLen; i++) {
             int kIndex = i % kLen;
-
-            // map the characters to 0-25
-            int m = ciphertext[i] - 'A';
+            int m = mappedCipher[i]; // Use the pre-calculated array!
             int K = currentKey[kIndex] - 'A';
 
-            // cipher math for decryption
-            int encrypted = (m - K + 26) % 26;
+            // NO MORE MODULO: Subtraction is significantly faster for the CPU
+            int decrypted = m - K;
+            if (decrypted < 0) {
+                decrypted += 26; 
+            }
 
-            // map back to an ASCII character and store in firstWord array
-            firstWord[i] = encrypted + 'A';
-
+            firstWord[i] = decrypted + 'A';
         }
-
+        
         // add the null terminator to the end of the firstWord
         firstWord[fwLen] = '\0';
         
@@ -104,7 +102,7 @@ void bruteForce(char *ciphertext, int kLen, int fwLen, char *currentKey, int key
     // Recursive Step: Loop through A-Z for the current key position
     for (char c = 'A'; c <= 'Z'; c++) {
         currentKey[keyIndex] = c;
-        bruteForce(ciphertext, kLen, fwLen, currentKey, keyIndex + 1);
+        bruteForce(ciphertext, mappedCipher, kLen, fwLen, currentKey, keyIndex + 1);
     }
 }
 
@@ -126,11 +124,20 @@ int main(int argc, char *argv[]) {
     // set up key buffer
     char currentKey[256];
 
+
+    // OPTIMIZATION: Pre-calculate the integer values of the ciphertext
+    int mappedCipher[256];
+    int cipherLen = strlen(ciphertext);
+    for(int i = 0; i < cipherLen; i++){
+        mappedCipher[i] = ciphertext[i] - 'A';
+    }
+
+
     // start the clock (for task 3 time reporting)
     clock_t start = clock();
 
     // call brute force function with arguments
-    bruteForce(ciphertext, kLen, fwLen, currentKey, 0);
+    bruteForce(ciphertext, mappedCipher, kLen, fwLen, currentKey, 0);
 
     // stop the clock
     clock_t end = clock();
