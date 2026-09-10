@@ -43,5 +43,8 @@ Execution Example:
 ./task2 "MSOKKJCOSXOEEKDTOSLGFWCMCHSUSGX" 2 6
 ```
 
+> **Note on Testing Ciphertext 2:**
+> When copying the second ciphertext from the project instructions, ensure your terminal does not interpret the PDF line break as an execution command. Copy the first line (ending in `MEX`), paste it, and then immediately copy and paste the second line (ending in `GCC`) on the exact same line. Always wrap the entire combined ciphertext in double quotes (`"..."`).
+
 
 
