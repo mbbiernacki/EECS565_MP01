@@ -5,7 +5,7 @@ This project is written in standard C and should be compiled using GCC. To ensur
 Ensure the following files are located in the same root directory before compiling or executing:
 * `task1.c`: encryption and decryption
 * `task2.c`: brute-force password cracking
-* `MP1_dict.txt`: The dictionary file required by `task2` to validate decrypted words.
+* `MP1_dict.txt`: dictionary file required by `task2` to validate decrypted words
 
 ---
 
